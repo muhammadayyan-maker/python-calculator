@@ -41,6 +41,46 @@ def toggle_dark_mode():
         btn.config(bg=bg_color, fg=fg_color)
     history_box.config(bg=bg_color, fg=fg_color)
 
+def bind_click(event, x=None):
+    global expression
+    text = x or event.widget["text"]
+    if text == "=":
+        calculate()
+    elif text == "C":
+        clear()
+    elif text == "√":
+        try:
+            expression = str(math.sqrt(float(expression)))
+            input_text.set(expression)
+        except:
+            messagebox.showerror("Error", "Invalid Input")
+            expression = ""
+            input_text.set("")
+    elif text == "x^y":
+        expression += "**"
+        input_text.set(expression)
+    elif text == "%":
+        expression += "%"
+        input_text.set(expression)
+    elif text == "n!":
+        try:
+            expression = str(math.factorial(int(expression)))
+            input_text.set(expression)
+        except:
+            messagebox.showerror("Error", "Invalid Input")
+            expression = ""
+            input_text.set("")
+    elif text == "π":
+        expression += str(math.pi)
+        input_text.set(expression)
+    elif text == "e":
+        expression += str(math.e)
+        input_text.set(expression)
+    elif text == "Dark":
+        toggle_dark_mode()
+    else:
+        click(event)
+
 # =============== GUI SETUP =================
 root = tk.Tk()
 root.title("ProPlus Calculator")
@@ -74,38 +114,9 @@ for row in btn_texts:
     r_frame = tk.Frame(btns_frame)
     r_frame.pack(expand=True, fill="both")
     for text in row:
-        def bind_click(x=text):
-            if x == "=":
-                return calculate()
-            elif x == "C":
-                return clear()
-            elif x == "√":
-                global expression
-                expression = str(math.sqrt(float(expression)))
-                input_text.set(expression)
-            elif x == "x^y":
-                expression += "**"
-                input_text.set(expression)
-            elif x == "%":
-                expression += "%"
-                input_text.set(expression)
-            elif x == "n!":
-                expression = str(math.factorial(int(expression)))
-                input_text.set(expression)
-            elif x == "π":
-                expression += str(math.pi)
-                input_text.set(expression)
-            elif x == "e":
-                expression += str(math.e)
-                input_text.set(expression)
-            elif x == "Dark":
-                toggle_dark_mode()
-            else:
-                click({'widget': btn})
-
         btn = tk.Button(r_frame, text=text, font=("Arial", 18), relief=tk.RAISED, bd=4)
         btn.pack(side="left", expand=True, fill="both", padx=1, pady=1)
-        btn.bind("<Button-1>", click)
+        btn.bind("<Button-1>", lambda e, t=text: bind_click(e, t))
         buttons.append(btn)
 
 # History
